@@ -1,0 +1,131 @@
+{
+    "name": "MVONdebugger",
+    "displayName": "MV# Debugger",
+    "version": "0.7.0",
+    "publisher": "ongroup",
+    "description": "Visual Debugger for MV# Basic Programs.",
+    "author": {
+        "name": "ONGroup International",
+        "email": "grant.hart@ongroup.com"
+    },
+    "license": "MIT",
+    "keywords": [
+        "MV# Debugger",
+        "MV#",
+        "MVON#",
+        "MVON"
+    ],
+    "engines": {
+        "vscode": "^1.18.0",
+        "node": "^7.9.0"
+    },
+    "icon": "images/mvsharp_logo128.ico",
+    "categories": [
+        "Debuggers"
+    ],
+    "homepage": "http://www.ongroup.com",
+    "private": true,
+    "scripts": {
+        "prepublish": "tsc -p ./src",
+        "compile": "tsc -p ./src",
+        "tslint": "tslint ./src/**/*.ts",
+        "watch": "tsc -w -p ./src",
+        "test": "mocha -u tdd ./out/tests/",
+        "postinstall": "node ./node_modules/vscode/bin/install",
+        "package": "vsce package",
+        "publish": "vsce publish"
+    },
+    "dependencies": {
+        "await-notify": "1.0.1",
+        "bindings": "^1.3.0",
+        "deasync": "^0.1.13",
+        "dnode": "^1.2.2",
+        "json-rpc": "^0.3.0",
+        "jsonrpc-ws": "0.0.3",
+        "node-gyp": "^3.8.0",
+        "sync-rest-client": "^1.0.3",
+        "sync-rpc": "^1.3.4",
+        "vscode-debugadapter": "1.27.0",
+        "vscode-debugprotocol": "1.27.0",
+        "ws": "^5.2.2"
+    },
+    "devDependencies": {
+        "@types/node": "7.0.55",
+        "@types/mocha": "2.2.48",
+        "typescript": "2.6.2",
+        "mocha": "5.0.1",
+        "vscode": "1.1.17",
+        "vscode-debugadapter-testsupport": "1.27.0",
+        "tslint": "5.9.1",
+        "vsce": "1.37.5"
+    },
+    "main": "./out/extension",
+    "activationEvents": [
+        "onDebug",
+        "onCommand:extension.mock-debug.getProgramName"
+    ],
+    "contributes": {
+        "breakpoints": [
+            {
+                "language": "mvon"
+            }
+        ],
+        "debuggers": [
+            {
+                "type": "mvon",
+                "label": "MVON# Debug",
+                "program": "./out/debugAdapter.js",
+                "runtime": "node",
+                "configurationAttributes": {
+                    "launch": {
+                        "required": [
+                            "program"
+                        ],
+                        "properties": {
+                            "program": {
+                                "type": "string",
+                                "description": "Absolute path to a text file.",
+                                "default": "${workspaceFolder}/${command:AskForProgramName}"
+                            },
+                            "stopOnEntry": {
+                                "type": "boolean",
+                                "description": "Automatically stop after launch.",
+                                "default": true
+                            },
+                            "trace": {
+                                "type": "boolean",
+                                "description": "Enable logging of the Debug Adapter Protocol.",
+                                "default": true
+                            }
+                        }
+                    }
+                },
+                "initialConfigurations": [
+                    {
+                        "type": "mvon",
+                        "request": "launch",
+                        "name": "Ask for file name",
+                        "program": "${workspaceFolder}/${command:AskForProgramName}",
+                        "stopOnEntry": true
+                    }
+                ],
+                "configurationSnippets": [
+                    {
+                        "label": "MVON# Debug: Launch",
+                        "description": "A new configuration for 'debugging' a user selected markdown file.",
+                        "body": {
+                            "type": "MVON#",
+                            "request": "launch",
+                            "name": "Ask for file name",
+                            "program": "^\"\\${workspaceFolder}/\\${command:AskForProgramName}\"",
+                            "stopOnEntry": true
+                        }
+                    }
+                ],
+                "variables": {
+                    "AskForProgramName": "extension.mvon-debug.getProgramName"
+                }
+            }
+        ]
+    }
+}
